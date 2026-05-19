@@ -7,7 +7,6 @@ macOS menu-bar app that records your microphone alongside a specific running app
 - **Stereo channel trick.** Mic on L, target app on R. Per-channel transcription gives free speaker labeling — no diarization model needed.
 - **On-device transcription.** Uses macOS 26's `SpeechAnalyzer`. Optional Whisper fallback for accuracy-critical cases.
 - **On-device summarization.** Apple Intelligence (`FoundationModels.framework`) auto-produces a markdown summary with action items.
-- **Calendar auto-record.** Watches your calendars; when a meeting starts, picks the app currently using the mic and records until the event ends.
 - **Claude-ready.** Stdio MCP server exposes `list_recordings`, `get_latest_transcript`, `get_latest_summary`, `search_recordings`, etc. — any Claude Code session can pull a transcript into context.
 
 ## Why it exists
@@ -101,6 +100,10 @@ Sources/Recorder/
 mcp-server/
 └── index.js                         Stdio MCP server (Node)
 ```
+
+## Experimental
+
+There's a `CalendarWatcher` that can auto-start a recording when a calendar event begins (heuristics on attendees / Zoom/Meet/Teams links). It's wired up under "Auto-record meetings" in the menu but hasn't been exercised end-to-end against a real calendar load — treat it as a proof of concept, not a feature. Disabled by default.
 
 ## Known limitations
 
