@@ -27,7 +27,8 @@ final class Recorder: NSObject {
     /// downstream transcription can label speakers by attendee name.
     func start(apps: [SCRunningApplication],
                titleSuffix: String? = nil,
-               metadata: RecordingMetadata? = nil) async throws {
+               metadata: RecordingMetadata? = nil,
+               voiceMemo: Bool = false) async throws {
         guard !isRecording else { return }
 
         let content = try await SCShareableContent.current
@@ -36,7 +37,16 @@ final class Recorder: NSObject {
                           userInfo: [NSLocalizedDescriptionKey: "No display found"])
         }
 
-        let filter = SCContentFilter(display: display, including: apps, exceptingWindows: [])
+        let filter: SCContentFilter
+        if voiceMemo {
+            // Exclude every running app from the display capture → no app
+            // audio reaches us. Mic still flows via the `.microphone` output.
+            filter = SCContentFilter(display: display,
+                                     excludingApplications: content.applications,
+                                     exceptingWindows: [])
+        } else {
+            filter = SCContentFilter(display: display, including: apps, exceptingWindows: [])
+        }
         let config = SCStreamConfiguration()
         config.capturesAudio = true
         config.excludesCurrentProcessAudio = true
@@ -89,17 +99,12 @@ final class Recorder: NSObject {
         writer?.consumePeaks() ?? (0, 0)
     }
 
-    /// Record the mic only — no app audio. We still need an `SCContentFilter`
-    /// for the stream to start, so we filter to our own process and rely on
-    /// `excludesCurrentProcessAudio = true` to silence the app channel. The
-    /// mic stream is a separate output type so it flows normally.
+    /// Record the mic only — no app audio. `SCContentFilter` requires *some*
+    /// filter, so we build one that excludes every running app from the
+    /// capture. The app-audio output stays silent; the mic stream is a
+    /// separate output type and flows normally.
     func startVoiceMemo() async throws {
-        let content = try await SCShareableContent.current
-        guard let me = content.applications.first(where: { $0.processID == pid_t(getpid()) }) else {
-            throw NSError(domain: "Recorder", code: 200,
-                          userInfo: [NSLocalizedDescriptionKey: "Couldn't find self in shareable content."])
-        }
-        try await start(apps: [me], titleSuffix: "memo")
+        try await start(apps: [], titleSuffix: "memo", voiceMemo: true)
     }
 
     func stop() async {
