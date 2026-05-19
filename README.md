@@ -113,6 +113,17 @@ There's a `CalendarWatcher` that can auto-start a recording when a calendar even
 - **Chrome / Electron tab audio** lives in helper processes. The picker aggregates helpers by bundle prefix; if you find an app whose audio doesn't capture, file an issue with its bundle layout.
 - **Ad-hoc / self-signed signing only.** No notarization. Rebuilds with the dev cert preserve TCC grants, but TCC will prompt anew on the first run after `setup-dev-cert.sh`.
 
+## Releases
+
+Tag a version and push it; GitHub Actions builds a signed `.app`, zips it, and attaches it to a release.
+
+```bash
+git tag v0.1.0
+git push --tags
+```
+
+The workflow runs on a `macos-26` runner because `SpeechAnalyzer` and `FoundationModels` only exist in the macOS 26 SDK. Releases are **ad-hoc signed** — users see a one-time Gatekeeper warning on first launch which they bypass with right-click → Open. Upgrading to Developer ID + notarization is a few-secret addition to the workflow if/when someone wants to fund it.
+
 ## Contributing
 
 PRs welcome. File issues for bugs or apps whose audio doesn't capture (include the bundle id and what helpers it spawns). For new features, open an issue first to discuss scope — this is a small focused tool, not a meeting-platform suite.
