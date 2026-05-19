@@ -1,0 +1,17 @@
+{
+  "name": "recorder-mcp",
+  "version": "0.1.0",
+  "description": "MCP server exposing local audio recordings + transcripts to Claude.",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "recorder-mcp": "./index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

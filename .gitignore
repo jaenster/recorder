@@ -1,0 +1,31 @@
+# Swift / SwiftPM
+.build/
+.swiftpm/
+Package.resolved
+*.xcodeproj/
+DerivedData/
+xcuserdata/
+
+# Assembled app bundle (regenerate with ./build.sh)
+Recorder.app/
+
+# Node (mcp-server)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# macOS
+.DS_Store
+*.swp
+*~
+
+# Editor
+.vscode/
+.idea/
+*.iml
+
+# Build logs / temp
+/tmp/
+*.log
