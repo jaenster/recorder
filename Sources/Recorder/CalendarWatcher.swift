@@ -1,7 +1,7 @@
 import Foundation
 import EventKit
 import AppKit
-import ScreenCaptureKit
+@preconcurrency import ScreenCaptureKit
 
 @MainActor
 protocol CalendarWatcherDelegate: AnyObject {

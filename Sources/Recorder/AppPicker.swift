@@ -1,6 +1,6 @@
 import Foundation
 import AppKit
-import ScreenCaptureKit
+@preconcurrency import ScreenCaptureKit
 
 /// One row the user can pick. Represents a "logical" app (Slack, Chrome, …)
 /// and the list of `SCRunningApplication`s whose audio should be captured
