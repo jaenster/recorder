@@ -89,6 +89,19 @@ final class Recorder: NSObject {
         writer?.consumePeaks() ?? (0, 0)
     }
 
+    /// Record the mic only — no app audio. We still need an `SCContentFilter`
+    /// for the stream to start, so we filter to our own process and rely on
+    /// `excludesCurrentProcessAudio = true` to silence the app channel. The
+    /// mic stream is a separate output type so it flows normally.
+    func startVoiceMemo() async throws {
+        let content = try await SCShareableContent.current
+        guard let me = content.applications.first(where: { $0.processID == pid_t(getpid()) }) else {
+            throw NSError(domain: "Recorder", code: 200,
+                          userInfo: [NSLocalizedDescriptionKey: "Couldn't find self in shareable content."])
+        }
+        try await start(apps: [me], titleSuffix: "memo")
+    }
+
     func stop() async {
         guard isRecording, let stream, let writer else { return }
         isRecording = false

@@ -115,6 +115,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             item.target = self
             menu.addItem(item)
         } else {
+            let memo = NSMenuItem(title: "Voice memo (mic only)",
+                                  action: #selector(startVoiceMemo),
+                                  keyEquivalent: "")
+            memo.target = self
+            menu.addItem(memo)
+
             let frontmost = NSMenuItem(title: "Record frontmost app  ⌃⌥R",
                                        action: #selector(recordFrontmost),
                                        keyEquivalent: "")
@@ -294,6 +300,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 self.startElapsedTimer()
             } catch {
                 self.presentError(error)
+            }
+        }
+    }
+
+    @objc private func startVoiceMemo() {
+        Task {
+            do {
+                try await recorder.startVoiceMemo()
+                recordingStartedAt = Date()
+                isRecording = true
+                startElapsedTimer()
+            } catch {
+                presentError(error)
             }
         }
     }
